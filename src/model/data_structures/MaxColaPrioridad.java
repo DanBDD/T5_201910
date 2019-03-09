@@ -76,8 +76,8 @@ public class MaxColaPrioridad <T extends Comparable<T>>implements IQueue<T>, Col
 			ultimo.cambiarSiguiente(nNode);
 		else
 			primerNodo = nNode;
-		ultimo = nNode;
-		numElementos++;
+			ultimo = nNode;
+			numElementos++;
 	}
 	@Override
 	public T dequeue() {

@@ -9,23 +9,14 @@ import model.vo.VOMovingViolations;
  *
  */
 public enum Comparaciones implements Serializable{
-	VIOLATIONCODE("Codigo", new SerializableComparator<VOMovingViolations>() {
-		/**
-		 * 
-		 */
+	ADRRESSID("AddressID", new SerializableComparator<VOMovingViolations>() {
 
-		/**
-		 * 
-		 */
 		private static final long serialVersionUID = 123L;
 
-		/**
-		 * Compara las dos canciones por su dificultad
-		 */
-		//TODO Cree y complete el m�todo compare, de acuerdo a la documentaci�n.
+		
 		@Override
 		public int compare(VOMovingViolations o1, VOMovingViolations o2) {
-			int comparacion=o1.darViolationCode().compareToIgnoreCase(o2.darViolationCode());
+			int comparacion = o1.darAddressID() - o2.darAddressID();
 			if(comparacion<0)
 				return -1;
 			else if(comparacion>0)
@@ -68,7 +59,7 @@ public enum Comparaciones implements Serializable{
 		@Override
 		public int compare(VOMovingViolations o1, VOMovingViolations o2) {
 			// TODO Auto-generated method stub
-
+			
 			int c= o2.darFechaLocalDateTime().getHour()-o1.darFechaLocalDateTime().getHour();
 			if(c<0)
 				return -1;

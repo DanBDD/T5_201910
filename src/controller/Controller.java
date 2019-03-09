@@ -7,6 +7,8 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
+import java.util.concurrent.ThreadLocalRandom;
+
 import com.opencsv.CSVReader;
 import model.data_structures.ArregloDinamico;
 import model.data_structures.Cola;
@@ -15,15 +17,14 @@ import model.data_structures.IQueue;
 import model.data_structures.IStack;
 import model.data_structures.Pila;
 import model.util.Sort;
-import model.vo.VODaylyStatistic;
+import model.vo.LocationVO;
 import model.vo.VOMovingViolations;
-import model.vo.VOViolationCode;
 import view.MovingViolationsManagerView;
 
 public class Controller {
 
 	private MovingViolationsManagerView view;
-	private Comparable<VOMovingViolations> [ ] muestra;
+	private Comparable<LocationVO>[] muestra;
 
 	/**
 	 * Ruta de archivo CSV Enero.
@@ -47,6 +48,7 @@ public class Controller {
 
 	private ArregloDinamico<VOMovingViolations> arreglo;
 
+	private ArregloDinamico<LocationVO> arregloLocationVO;
 
 
 	public Controller() {
@@ -72,7 +74,8 @@ public class Controller {
 			case 0:
 				controller.loadMovingViolations();
 				break;
-
+			case 1:
+				controller.generarLocationVO();
 			case 13:	
 				fin=true;
 				sc.close();
@@ -89,30 +92,13 @@ public class Controller {
 				CSVReader lectorEnero = new CSVReader(new FileReader(rutaEnero));
 				String[] lineaEnero = lectorEnero.readNext();
 				while ((lineaEnero = lectorEnero.readNext()) != null) {
-					String obID = lineaEnero[0];
-					int objectID = Integer.parseInt(obID);
+					
 					String address = lineaEnero[3];
-					String streetSegID = lineaEnero[4];
-					String fine = lineaEnero[8];
-					int fineAmt = Integer.parseInt(fine);
-					String total = lineaEnero[9];
-					int totalPaid = Integer.parseInt(total);
-					String p1 = lineaEnero[10];
-					int penalty1 = Integer.parseInt(p1);
-					String p2 = lineaEnero[11];
-					int penalty2 = 0;
-					if(!p2.equals("")){
-						penalty2 = Integer.parseInt(p2);
-					}
-					else{
-						penalty2 = 0;
-					}
-					String accidentIndicator = lineaEnero[12];
+					int addressID = Integer.parseInt(address);
+					String location = lineaEnero[2];
 					String issueDate = lineaEnero[13];
-					String violationCode = lineaEnero[14];
-					String violationDesc = lineaEnero[15];
-					arreglo.agregar(new VOMovingViolations(objectID, issueDate, violationCode, fineAmt, address, streetSegID,
-							totalPaid, violationDesc, accidentIndicator, penalty1, penalty2));
+					
+					arreglo.agregar(new VOMovingViolations(issueDate, addressID, location));
 
 				}
 				lectorEnero.close();
@@ -120,63 +106,24 @@ public class Controller {
 				CSVReader lectorFebrero = new CSVReader(new FileReader(rutaFebrero));
 				String[] lineaFebrero = lectorFebrero.readNext();
 				while ((lineaFebrero = lectorFebrero.readNext()) != null) {
-					String obID = lineaFebrero[0];
-					int objectID = Integer.parseInt(obID);
 					String address = lineaFebrero[3];
-					String streetSegID = lineaFebrero[4];
-					String fine = lineaFebrero[8];
-					int fineAmt = Integer.parseInt(fine);
-					String total = lineaFebrero[9];
-					int totalPaid = Integer.parseInt(total);
-					String p1 = lineaFebrero[10];
-					int penalty1 = Integer.parseInt(p1);
-					String p2 = lineaFebrero[11];
-					int penalty2 = 0;
-					if(!p2.equals("")){
-						penalty2 = Integer.parseInt(p2);
-					}
-					else{
-						penalty2 = 0;
-					}
-					String accidentIndicator = lineaFebrero[12];
+					int addressID = Integer.parseInt(address);
+					String location = lineaFebrero[2];
 					String issueDate = lineaFebrero[13];
-					String violationCode = lineaFebrero[14];
-					String violationDesc = lineaFebrero[15];
-
-					arreglo.agregar(new VOMovingViolations(objectID, issueDate, violationCode, fineAmt, address, streetSegID,
-							totalPaid, violationDesc, accidentIndicator, penalty1, penalty2));
-
+					
+					arreglo.agregar(new VOMovingViolations(issueDate, addressID, location));
 				}
 				lectorFebrero.close();
 
 				CSVReader lectorMarzo = new CSVReader(new FileReader(rutaMarzo));
 				String[] lineaMarzo = lectorMarzo.readNext();
 				while ((lineaMarzo = lectorMarzo.readNext()) != null) {
-					String obID = lineaMarzo[0];
-					int objectID = Integer.parseInt(obID);
 					String address = lineaMarzo[3];
-					String streetSegID = lineaMarzo[4];
-					String fine = lineaMarzo[8];
-					int fineAmt = Integer.parseInt(fine);
-					String total = lineaMarzo[9];
-					int totalPaid = Integer.parseInt(total);
-					String p1 = lineaMarzo[10];
-					int penalty1 = Integer.parseInt(p1);
-					String p2 = lineaMarzo[11];
-					int penalty2 = 0;
-					if(!p2.equals("")){
-						penalty2 = Integer.parseInt(p2);
-					}
-					else{
-						penalty2 = 0;
-					}
-					String accidentIndicator = lineaMarzo[12];
+					int addressID = Integer.parseInt(address);
+					String location = lineaMarzo[2];
 					String issueDate = lineaMarzo[13];
-					String violationCode = lineaMarzo[14];
-					String violationDesc = lineaMarzo[15];
-
-					arreglo.agregar(new VOMovingViolations(objectID, issueDate, violationCode, fineAmt, address, streetSegID,
-							totalPaid, violationDesc, accidentIndicator, penalty1, penalty2));
+					
+					arreglo.agregar(new VOMovingViolations(issueDate, addressID, location));
 
 				}
 				lectorMarzo.close();
@@ -184,30 +131,12 @@ public class Controller {
 				CSVReader lectorAbril = new CSVReader(new FileReader(rutaAbril));
 				String[] lineaAbril = lectorAbril.readNext();
 				while ((lineaAbril = lectorAbril.readNext()) != null) {
-					String obID = lineaAbril[0];
-					int objectID = Integer.parseInt(obID);
 					String address = lineaAbril[3];
-					String streetSegID = lineaAbril[4];
-					String fine = lineaAbril[8];
-					int fineAmt = Integer.parseInt(fine);
-					String total = lineaAbril[9];
-					int totalPaid = Integer.parseInt(total);
-					String p1 = lineaAbril[10];
-					int penalty1 = Integer.parseInt(p1);
-					String p2 = lineaAbril[11];
-					int penalty2 = 0;
-					if(!p2.equals("")){
-						penalty2 = Integer.parseInt(p2);
-					}
-					else{
-						penalty2 = 0;
-					}
-					String accidentIndicator = lineaAbril[12];
+					int addressID = Integer.parseInt(address);
+					String location = lineaAbril[2];
 					String issueDate = lineaAbril[13];
-					String violationCode = lineaAbril[14];
-					String violationDesc = lineaAbril[15];
-					arreglo.agregar(new VOMovingViolations(objectID, issueDate, violationCode, fineAmt, address, streetSegID,
-							totalPaid, violationDesc, accidentIndicator, penalty1, penalty2));				
+					
+					arreglo.agregar(new VOMovingViolations(issueDate, addressID, location));				
 				}
 				lectorAbril.close();
 
@@ -216,6 +145,30 @@ public class Controller {
 			e.printStackTrace();
 		}
 
+	}
+	public ArregloDinamico<LocationVO> generarLocationVO(){
+		
+		Sort.ordenarMergeSort(muestra);
+		
+		return arregloLocationVO;
+		
+	}
+	public Comparable<LocationVO>[] generarMuestra(int numElems){
+		
+		muestra = new Comparable[numElems];
+		
+		ArregloDinamico<LocationVO> arr = arregloLocationVO;
+		
+		int pos=0;
+		int aleatorio = 0;
+		while(pos<numElems)
+		{
+			aleatorio =  ThreadLocalRandom.current().nextInt(0, arr.darTamano());
+			muestra[pos] = arr.darElem(aleatorio);
+ 			pos++;
+		}
+
+		return muestra;
 	}
 
 	/**

@@ -1,6 +1,9 @@
 package model.data_structures;
 
-
+/**
+ *Los métodos de esta clase se tomaron del libro Algorithms de Sedgewick y Wayne
+ * @param <T>
+ */
 public class MaxHeapCP<T extends Comparable<T>> implements ColaDePrioridad<T>
 {
 	private int numElementos;
@@ -34,8 +37,11 @@ public class MaxHeapCP<T extends Comparable<T>> implements ColaDePrioridad<T>
 		while (2*k <= numElementos)
 		{
 			int j = 2*k;
-			if (j < numElementos && less(j, j+1)) j++;
-			if (!less(k, j)) break;
+			if (j < numElementos && less(j, j+1)){ 
+				j++;}
+			if (!less(k, j)){
+				break;
+			}
 			exch(k, j);
 			k = j;
 		} }
