@@ -8,7 +8,6 @@ import java.util.Scanner;
 import controller.Controller;
 import model.data_structures.ArregloDinamico;
 import model.data_structures.IQueue;
-import model.data_structures.IStack;
 import model.vo.VOMovingViolations;
 
 public class MovingViolationsManagerView 

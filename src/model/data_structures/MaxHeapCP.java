@@ -1,18 +1,22 @@
 package model.data_structures;
 
 /**
- *Los métodos de esta clase se tomaron del libro Algorithms de Sedgewick y Wayne
+ *Los mï¿½todos de esta clase se tomaron del libro Algorithms de Sedgewick y Wayne
  * @param <T>
  */
 public class MaxHeapCP<T extends Comparable<T>> implements ColaDePrioridad<T>
 {
 	private int numElementos;
+	private int tamanoArreglo;
 	private T[] heap;
+	private T[] elems;
 
-	public MaxHeapCP()
+	public MaxHeapCP(int pTamano)
 	{
-		heap = (T[])new Object[0];
+		heap = (T[])new Comparable[pTamano];
+		agregar(null);
 		numElementos=0;
+		tamanoArreglo=pTamano;
 	}
 	private boolean less(int i, int j)
 	{  
@@ -71,8 +75,20 @@ public class MaxHeapCP<T extends Comparable<T>> implements ColaDePrioridad<T>
 
 	@Override
 	public void agregar(T elemento) {
-		heap[numElementos++]=elemento;
-		swim(numElementos);
+		 if ( numElementos == tamanoArreglo )
+         {  // caso de arreglo lleno (aumentar tamaNo)
+              tamanoArreglo = 2 * tamanoArreglo;
+              T [ ] copia = heap;
+              heap = (T[])new Comparable[tamanoArreglo];
+              for ( int i = 0; i < numElementos; i++)
+              {
+               	 heap[i] = copia[i];
+              } 
+         }	
+         heap[numElementos++] = elemento;
+         swim(numElementos);
+       
 	}
+
 
 }

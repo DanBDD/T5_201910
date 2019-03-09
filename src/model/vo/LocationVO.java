@@ -3,23 +3,29 @@ package model.vo;
 public class LocationVO implements Comparable<LocationVO>{
 
 	private int adressID;
-	
+
 	private String location;
-	
+
 	private int numberOfRegisters;
-	
+
+	public  LocationVO(int a, String l, int num) {
+		adressID=a;
+		location=l;
+		numberOfRegisters=num;
+	}
 	@Override
 	public int compareTo(LocationVO o) {
-		
-		if((numberOfRegisters - o.numberOfRegisters) > 0){
+
+		if((this.numberOfRegisters - o.numberOfRegisters) > 0)
 			return 1;
-		}
-		else if((numberOfRegisters - o.numberOfRegisters) < 0){
+		else if((this.numberOfRegisters - o.numberOfRegisters) < 0)
 			return -1;
-		}
 		else{
-			if((location.com))
+			if(this.location.compareToIgnoreCase(o.location)>0)
+				return 1;
+			else if(this.location.compareToIgnoreCase(o.location)<0)
+				return -1;
+			return 0;
 		}
 	}
-
 }

@@ -11,12 +11,6 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import com.opencsv.CSVReader;
 import model.data_structures.ArregloDinamico;
-import model.data_structures.Cola;
-import model.data_structures.Comparaciones;
-import model.data_structures.IQueue;
-import model.data_structures.IStack;
-import model.data_structures.Pila;
-import model.util.Sort;
 import model.vo.LocationVO;
 import model.vo.VOMovingViolations;
 import view.MovingViolationsManagerView;
@@ -24,7 +18,7 @@ import view.MovingViolationsManagerView;
 public class Controller {
 
 	private MovingViolationsManagerView view;
-	private Comparable<LocationVO>[] muestra;
+	private Comparable<VOMovingViolations>[] muestra;
 
 	/**
 	 * Ruta de archivo CSV Enero.
@@ -47,9 +41,6 @@ public class Controller {
 	public static final String rutaAbril = "./data/Moving_Violations_Issued_in_April_2018.csv";
 
 	private ArregloDinamico<VOMovingViolations> arreglo;
-
-	private ArregloDinamico<LocationVO> arregloLocationVO;
-
 
 	public Controller() {
 		view = new MovingViolationsManagerView();
@@ -75,7 +66,11 @@ public class Controller {
 				controller.loadMovingViolations();
 				break;
 			case 1:
-				controller.generarLocationVO();
+				view.printMessage("Ingrese el tamaño de la muestra:");
+				int num = sc.nextInt();
+				controller.generarMuestra(num);
+			case 2:
+				
 			case 13:	
 				fin=true;
 				sc.close();
@@ -146,28 +141,18 @@ public class Controller {
 		}
 
 	}
-	public ArregloDinamico<LocationVO> generarLocationVO(){
+
+	public Comparable<VOMovingViolations>[] generarMuestra(int numElems){
 		
-		Sort.ordenarMergeSort(muestra);
-		
-		return arregloLocationVO;
-		
-	}
-	public Comparable<LocationVO>[] generarMuestra(int numElems){
-		
-		muestra = new Comparable[numElems];
-		
-		ArregloDinamico<LocationVO> arr = arregloLocationVO;
-		
+		muestra = new Comparable[numElems];		
 		int pos=0;
 		int aleatorio = 0;
 		while(pos<numElems)
 		{
-			aleatorio =  ThreadLocalRandom.current().nextInt(0, arr.darTamano());
-			muestra[pos] = arr.darElem(aleatorio);
+			aleatorio =  ThreadLocalRandom.current().nextInt(0, arreglo.darTamano());
+			muestra[pos] = arreglo.darElem(aleatorio);
  			pos++;
 		}
-
 		return muestra;
 	}
 
