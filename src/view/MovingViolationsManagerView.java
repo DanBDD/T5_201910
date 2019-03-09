@@ -9,9 +9,7 @@ import controller.Controller;
 import model.data_structures.ArregloDinamico;
 import model.data_structures.IQueue;
 import model.data_structures.IStack;
-import model.vo.VODaylyStatistic;
 import model.vo.VOMovingViolations;
-import model.vo.VOViolationCode;
 
 public class MovingViolationsManagerView 
 {
