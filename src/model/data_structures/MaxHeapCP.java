@@ -6,15 +6,16 @@ package model.data_structures;
  */
 public class MaxHeapCP<T extends Comparable<T>> implements ColaDePrioridad<T>
 {
-	private int numElementos = 0;
-	private int tamanoArreglo;
+	private int N;
+	private int max;
 	private T[] heap;
-	private T[] elems;
 
-	public MaxHeapCP(int pTamano)
+	public MaxHeapCP()
 	{
-		heap = (T[])new Comparable[pTamano+1];
-		tamanoArreglo=pTamano;
+		max=2;
+		heap = (T[])new Comparable[max+1];
+		N=0;
+		
 	}
 	private boolean less(int i, int j)
 	{  
@@ -36,11 +37,12 @@ public class MaxHeapCP<T extends Comparable<T>> implements ColaDePrioridad<T>
 	}
 	private void sink(int k)
 	{
-		while (2*k <= numElementos)
+		while (2*k <= N)
 		{
 			int j = 2*k;
-			if (j < numElementos && less(j, j+1)){ 
-				j++;}
+			if (j < N && less(j, j+1)){ 
+				j++;
+			}
 			if (!less(k, j)){
 				break;
 			}
@@ -49,14 +51,14 @@ public class MaxHeapCP<T extends Comparable<T>> implements ColaDePrioridad<T>
 		} }
 	@Override
 	public int darNumElementos() {
-		return numElementos;
+		return N;
 	}
 
 	@Override
 	public T delMax() {
 		T temp=heap[1];
-		exch(1, numElementos--);
-		heap[numElementos+1] = null;
+		exch(1, N--);
+		heap[N+1] = null;
 		sink(1);
 		return temp;
 	}
@@ -68,23 +70,23 @@ public class MaxHeapCP<T extends Comparable<T>> implements ColaDePrioridad<T>
 
 	@Override
 	public boolean estaVacia() {
-		return numElementos==0;
+		return N==0;
 	}
 
 	@Override
 	public void agregar(T elemento) {
-		 if ( numElementos == tamanoArreglo )
+		 if ( N == max )
          {  // caso de arreglo lleno (aumentar tamaNo)
-              tamanoArreglo = 2 * tamanoArreglo;
+              max*=2;
               T [ ] copia = heap;
-              heap = (T[])new Comparable[tamanoArreglo];
-              for ( int i = 0; i < numElementos; i++)
+              heap = (T[])new Comparable[max+1];
+              for ( int i = 0; i <= N; i++)
               {
                	 heap[i] = copia[i];
               } 
          }	
-         heap[++numElementos] = elemento;
-         swim(numElementos);
+         heap[++N] = elemento;
+         swim(N);
        
 	}
 

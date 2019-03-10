@@ -11,6 +11,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import com.opencsv.CSVReader;
 import model.data_structures.ArregloDinamico;
+import model.util.Sort;
 import model.vo.LocationVO;
 import model.vo.VOMovingViolations;
 import view.MovingViolationsManagerView;
@@ -142,9 +143,10 @@ public class Controller {
 
 	}
 
-	public Comparable<VOMovingViolations>[] generarMuestra(int numElems){
+	public Comparable<LocationVO>[] generarMuestra(int numElems){
 		
-		muestra = new Comparable[numElems];		
+		muestra = new Comparable[numElems];	
+		Comparable<LocationVO> [] res = new Comparable[numElems/2];
 		int pos=0;
 		int aleatorio = 0;
 		while(pos<numElems)
@@ -153,7 +155,8 @@ public class Controller {
 			muestra[pos] = arreglo.darElem(aleatorio);
  			pos++;
 		}
-		return muestra;
+		Sort.ordenarMergeSort(muestra, Compa , true);
+		return res;
 	}
 
 	/**

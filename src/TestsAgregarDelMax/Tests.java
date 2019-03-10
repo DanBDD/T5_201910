@@ -16,7 +16,7 @@ public class Tests extends TestCase{
 	public void setUp()
 	{
 		cola= new MaxColaPrioridad<Integer>();
-		heap=new MaxHeapCP<Integer>(1);
+		heap=new MaxHeapCP<Integer>();
 		for(int actual: ARREGLO)
 		{
 			cola.agregar(actual);
