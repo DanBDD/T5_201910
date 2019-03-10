@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Iterator;
 import java.util.Scanner;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -52,8 +53,8 @@ public class Controller {
 		view = new MovingViolationsManagerView();
 		//TODO inicializar pila 
 		arreglo=new ArregloDinamico<VOMovingViolations>(160000);
-		cola = new MaxColaPrioridad<>();
-		heap = new MaxHeapCP<>();
+		cola = new MaxColaPrioridad<LocationVO>();
+		heap = new MaxHeapCP<LocationVO>();
 	}
 
 	public void run() {
@@ -80,7 +81,8 @@ public class Controller {
 				view.printMessage("Dar tamaNo de la muestra: ");
 				nMuestra = sc.nextInt();
 				muestra = this.generarMuestra( nMuestra );
-				view.printMessage("Muestra generada");
+				int tam = muestra.length;
+				view.printMessage("Muestra generada, tamano: " + tam);
 				break;
 			case 2:
 				if ( nMuestra > 0 && muestra != null  )
@@ -137,7 +139,7 @@ public class Controller {
 				{
 					copia = this.obtenerCopia(muestra);
 					startTime = System.currentTimeMillis();
-					this.borrarMaxHeap();
+					this.borrarMaxHeap(copia);
 					endTime = System.currentTimeMillis();
 					duration = endTime - startTime;
 					view.printMessage("Eliminar máximo terminado con HeapMAX.");
@@ -302,12 +304,19 @@ public class Controller {
 	}
 	
 	public void borrarMaxCola(){
-		
+//		Iterator<LocationVO> it = cola.iterator();
+//		while(it.hasNext()){
+//			cola.delMax();
+//		}
 		cola.delMax();
 	}
 	
-	public void borrarMaxHeap(){
-		heap.delMax();
+	public void borrarMaxHeap(Comparable<LocationVO>[] arreglo){
+		
+		for(int i = 0; i<arreglo.length && arreglo != null;i++){
+			LocationVO actual = (LocationVO) arreglo[i];
+			heap.delMax();
+		}
 	}
 	
 	/**
