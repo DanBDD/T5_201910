@@ -2,14 +2,14 @@ package model.vo;
 
 public class LocationVO implements Comparable<LocationVO>{
 
-	private int adressID;
+	private int addressID;
 
 	private String location;
 
 	private int numberOfRegisters;
 
 	public  LocationVO(int a, String l, int num) {
-		adressID=a;
+		addressID=a;
 		location=l;
 		numberOfRegisters=num;
 	}
@@ -29,7 +29,7 @@ public class LocationVO implements Comparable<LocationVO>{
 		}
 	}
 	public int darAddressID(){
-		return adressID;
+		return addressID;
 	}
 	
 	public int darNumberOfRegisters(){
@@ -38,6 +38,10 @@ public class LocationVO implements Comparable<LocationVO>{
 	
 	public String darLocation(){
 		return location;
+	}
+	
+	public String toString(){
+		return "AddressID: " + addressID + " Number of registers: " + numberOfRegisters + " location: " + location ;
 	}
 }
 
