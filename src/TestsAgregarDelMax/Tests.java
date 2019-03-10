@@ -20,18 +20,32 @@ public class Tests extends TestCase{
 		for(int actual: ARREGLO)
 		{
 			cola.agregar(actual);
-//			System.out.println(cola.darNumElementos());
 			heap.agregar(actual);
-//			System.out.println(heap.darNumElementos());
 		}
 
 	}
+
 	@Test
-	public void test()
+	public void testSize()
 	{
 		assertEquals(cola.darNumElementos(), 20);
 		assertEquals(heap.darNumElementos(), 20);
 
+	}
+	@Test
+	public void testDarMax(){
+		assertEquals(heap.max(), Integer.valueOf(446));
+		assertEquals(cola.max(), Integer.valueOf(446));
+		
+	}
+	@Test
+	public void testDelMax(){
+		assertEquals(cola.delMax(), Integer.valueOf(446));
+		assertEquals(cola.darNumElementos(), 19);
+		assertEquals(heap.delMax(), Integer.valueOf(446));
+		assertEquals(heap.darNumElementos(), 19);
+		
+		
 	}
 	
 }

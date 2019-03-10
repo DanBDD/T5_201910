@@ -28,4 +28,17 @@ public class LocationVO implements Comparable<LocationVO>{
 			return 0;
 		}
 	}
+	public int darAddressID(){
+		return adressID;
+	}
+	
+	public int darNumberOfRegisters(){
+		return numberOfRegisters;
+	}
+	
+	public String darLocation(){
+		return location;
+	}
 }
+
+

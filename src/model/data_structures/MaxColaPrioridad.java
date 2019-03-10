@@ -2,7 +2,7 @@ package model.data_structures;
 
 import java.util.Iterator;
 
-public class MaxColaPrioridad <T extends Comparable<T>>implements IQueue<T>, ColaDePrioridad<T>{
+public class MaxColaPrioridad <T extends Comparable<T>>implements ColaDePrioridad<T>{
 
 	private int numElementos;
 	private Nodo<T> primerNodo;
@@ -13,18 +13,12 @@ public class MaxColaPrioridad <T extends Comparable<T>>implements IQueue<T>, Col
 		primerNodo=null;
 		numElementos=0;
 	}
-	@Override
-	public Iterator<T> iterator() {
-		return new Iterador<T>(primerNodo);
-	}
-	@Override
-	public int darNumElementos() {
-		return numElementos;
-	}
+
 	@Override
 	public T delMax() {
 		T max=primerNodo.darElem();
 		primerNodo=primerNodo.darSiguiente();
+		numElementos--;
 		return max;
 	}
 	@Override
@@ -37,54 +31,81 @@ public class MaxColaPrioridad <T extends Comparable<T>>implements IQueue<T>, Col
 	}
 	@Override
 	public void agregar(T elemento) {
-		if(numElementos==0)
-		{
-			primerNodo=new Nodo<T>(elemento);
+		
+		boolean add = false;
+		
+		if(elemento == null){
+			throw new NullPointerException();
 		}
+
 		else
 		{
-			Nodo<T> actual=primerNodo;
+		
 			Nodo<T> nuevo = new Nodo<T>(elemento);
-			while(actual.darSiguiente()!=null)
-			{
-				if(actual.darSiguiente().darElem().compareTo(elemento)>0)
-				{
-					actual=actual.darSiguiente();
+			
+			if(primerNodo == null){
+				primerNodo = nuevo;
+				numElementos++;
+				add =true;
+			}
+			else{
+				if(primerNodo.darSiguiente() == null){
+					if(primerNodo.darElem().compareTo(elemento) > 0){
+						primerNodo.cambiarSiguiente(nuevo);
+						numElementos++;
+						add =true;
+					}
+					else{
+					
+						Nodo<T> siguiente = primerNodo;
+						primerNodo = nuevo;
+						nuevo.cambiarSiguiente(siguiente);
+						numElementos++;
+						add =true;
+					}
 				}
-				else
-				{
-					nuevo.cambiarSiguiente(actual.darSiguiente());
-					actual.cambiarSiguiente(nuevo);
+				else{
+					Nodo<T> actual=primerNodo;
+					Nodo<T> anterior = null;
+					while(!add){
+						if(actual.darElem().compareTo(elemento) > 0){
+							if(actual.darSiguiente() == null){
+								actual.cambiarSiguiente(nuevo);
+								numElementos++;
+								add = true;
+							}
+							else{
+								anterior = actual;
+								actual = actual.darSiguiente();
+							}
+						}
+						else{
+							if(anterior == null){
+								Nodo<T>siguiente = primerNodo;
+								primerNodo = nuevo;
+								nuevo.cambiarSiguiente(siguiente);
+								numElementos++;
+								add = true;
+							}
+							else{
+								anterior.cambiarSiguiente(nuevo);
+								nuevo.cambiarSiguiente(actual);
+								numElementos++;
+								add = true;
+							}
+						}
+					}
 				}
+				
 			}
 		}
-		numElementos++;
+
 
 	}
+
 	@Override
-	public boolean isEmpty() {
-		return numElementos==0;
-	}
-	@Override
-	public int size() {
+	public int darNumElementos() {
 		return numElementos;
-	}
-	@Override
-	public void enqueue(T t) {
-		Nodo<T> nNode = new Nodo<T>(t);
-		if(ultimo != null)
-			ultimo.cambiarSiguiente(nNode);
-		else
-			primerNodo = nNode;
-			ultimo = nNode;
-			numElementos++;
-	}
-	@Override
-	public T dequeue() {
-		T elem = primerNodo.darElem();
-		primerNodo=primerNodo.darSiguiente();
-		numElementos--;
-		return elem;
 	}
 
 }

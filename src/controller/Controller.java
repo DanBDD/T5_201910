@@ -94,6 +94,7 @@ public class Controller {
 					duration = endTime - startTime;
 					view.printMessage("Agregar terminado con Cola de Prioridad.");
 					view.printMessage("Tiempo en agregar con Cola de Prioridad: " + duration + " milisegundos");
+					
 				}
 				else
 				{
