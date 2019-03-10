@@ -11,6 +11,9 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import com.opencsv.CSVReader;
 import model.data_structures.ArregloDinamico;
+import model.data_structures.Comparaciones;
+import model.data_structures.MaxColaPrioridad;
+import model.data_structures.MaxHeapCP;
 import model.util.Sort;
 import model.vo.LocationVO;
 import model.vo.VOMovingViolations;
@@ -19,8 +22,10 @@ import view.MovingViolationsManagerView;
 public class Controller {
 
 	private MovingViolationsManagerView view;
-	private Comparable<VOMovingViolations>[] muestra;
-
+	private Comparable<LocationVO>[] muestra;
+	private Comparable<LocationVO>[] copia;
+	private MaxColaPrioridad<LocationVO> cola;
+	private MaxHeapCP<LocationVO> heap;
 	/**
 	 * Ruta de archivo CSV Enero.
 	 */
@@ -47,14 +52,18 @@ public class Controller {
 		view = new MovingViolationsManagerView();
 		//TODO inicializar pila 
 		arreglo=new ArregloDinamico<VOMovingViolations>(160000);
-
+		cola = new MaxColaPrioridad<>();
+		heap = new MaxHeapCP<>();
 	}
 
 	public void run() {
 		Scanner sc = new Scanner(System.in);
 		boolean fin=false;
-		Controller controller = new Controller();
-
+		int nMuestra = 0;
+		long startTime = 0;
+		long endTime = 0;
+		long duration = 0;
+		int nDatos = 0;
 		while(!fin)
 		{
 			view.printMenu();
@@ -64,15 +73,82 @@ public class Controller {
 			switch(option)
 			{
 			case 0:
-				controller.loadMovingViolations();
+				nDatos = this.loadMovingViolations();
+				view.printMessage("Datos cargados, total de datos: " + nDatos);
 				break;
 			case 1:
-				view.printMessage("Ingrese el tamaÃ±o de la muestra:");
-				int num = sc.nextInt();
-				controller.generarMuestra(num);
+				view.printMessage("Dar tamaNo de la muestra: ");
+				nMuestra = sc.nextInt();
+				muestra = this.generarMuestra( nMuestra );
+				view.printMessage("Muestra generada");
+				break;
 			case 2:
+				if ( nMuestra > 0 && muestra != null  )
+				{
+					copia = this.obtenerCopia(muestra);
+					startTime = System.currentTimeMillis();
+					this.agregarColaPrioridad(copia);
+					endTime = System.currentTimeMillis();
+					duration = endTime - startTime;
+					view.printMessage("Agregar terminado con Cola de Prioridad.");
+					view.printMessage("Tiempo en agregar con Cola de Prioridad: " + duration + " milisegundos");
+				}
+				else
+				{
+					view.printMessage("Muestra invalida");
+				}
+				break;
+
+			case 3:
+				if ( nMuestra > 0 && muestra != null  )
+				{
+					copia = this.obtenerCopia(muestra);
+					startTime = System.currentTimeMillis();
+					this.agregarMaxHeap(copia);
+					endTime = System.currentTimeMillis();
+					duration = endTime - startTime;
+					view.printMessage("Agregar terminado con HeapMAX.");
+					view.printMessage("Tiempo en agregar con HeapMAX: " + duration + " milisegundos");
+				}
+				else
+				{
+					view.printMessage("Muestra invalida");
+				}
+				break;
+			case 4:
+				if ( nMuestra > 0 && muestra != null && cola.darNumElementos() > 0 )
+				{
+					copia = this.obtenerCopia(muestra);
+					startTime = System.currentTimeMillis();
+					this.borrarMaxCola();
+					endTime = System.currentTimeMillis();
+					duration = endTime - startTime;
+					view.printMessage("Eliminar máximo terminado con Cola de Prioridad.");
+					view.printMessage("Tiempo en eliminar máximo con Cola de Prioridad: " + duration + " milisegundos");
+				}
+				else
+				{
+					view.printMessage("Muestra invalida");
+				}
+				break;
 				
-			case 13:	
+			case 5:
+				if ( nMuestra > 0 && muestra != null && heap.darNumElementos() > 0)
+				{
+					copia = this.obtenerCopia(muestra);
+					startTime = System.currentTimeMillis();
+					this.borrarMaxHeap();
+					endTime = System.currentTimeMillis();
+					duration = endTime - startTime;
+					view.printMessage("Eliminar máximo terminado con HeapMAX.");
+					view.printMessage("Tiempo en eliminar máximo con HeapMAX: " + duration + " milisegundos");
+				}
+				else
+				{
+					view.printMessage("Muestra invalida");
+				}
+				break;
+			case 6:	
 				fin=true;
 				sc.close();
 				break;
@@ -82,7 +158,8 @@ public class Controller {
 	}
 
 
-	public void loadMovingViolations() {
+	public int loadMovingViolations() {
+		int contador = 0;
 		try {
 			
 				CSVReader lectorEnero = new CSVReader(new FileReader(rutaEnero));
@@ -90,12 +167,19 @@ public class Controller {
 				while ((lineaEnero = lectorEnero.readNext()) != null) {
 					
 					String address = lineaEnero[3];
-					int addressID = Integer.parseInt(address);
+					int addressID = 0;
+					if(address.equals("")){
+						addressID = 0;
+					}
+					else{
+						addressID = Integer.parseInt(address);
+					}
+					
 					String location = lineaEnero[2];
 					String issueDate = lineaEnero[13];
 					
 					arreglo.agregar(new VOMovingViolations(issueDate, addressID, location));
-
+					contador++;
 				}
 				lectorEnero.close();
 
@@ -103,11 +187,19 @@ public class Controller {
 				String[] lineaFebrero = lectorFebrero.readNext();
 				while ((lineaFebrero = lectorFebrero.readNext()) != null) {
 					String address = lineaFebrero[3];
-					int addressID = Integer.parseInt(address);
+					int addressID = 0;
+					if(address.equals("")){
+						addressID = 0;
+					}
+					else{
+						addressID = Integer.parseInt(address);
+					}
 					String location = lineaFebrero[2];
 					String issueDate = lineaFebrero[13];
 					
 					arreglo.agregar(new VOMovingViolations(issueDate, addressID, location));
+					contador++;
+
 				}
 				lectorFebrero.close();
 
@@ -115,11 +207,18 @@ public class Controller {
 				String[] lineaMarzo = lectorMarzo.readNext();
 				while ((lineaMarzo = lectorMarzo.readNext()) != null) {
 					String address = lineaMarzo[3];
-					int addressID = Integer.parseInt(address);
+					int addressID = 0;
+					if(address.equals("")){
+						addressID = 0;
+					}
+					else{
+						addressID = Integer.parseInt(address);
+					}
 					String location = lineaMarzo[2];
 					String issueDate = lineaMarzo[13];
 					
 					arreglo.agregar(new VOMovingViolations(issueDate, addressID, location));
+					contador++;
 
 				}
 				lectorMarzo.close();
@@ -128,11 +227,19 @@ public class Controller {
 				String[] lineaAbril = lectorAbril.readNext();
 				while ((lineaAbril = lectorAbril.readNext()) != null) {
 					String address = lineaAbril[3];
-					int addressID = Integer.parseInt(address);
+					int addressID = 0;
+					if(address.equals("")){
+						addressID = 0;
+					}
+					else{
+						addressID = Integer.parseInt(address);
+					}
 					String location = lineaAbril[2];
 					String issueDate = lineaAbril[13];
 					
 					arreglo.agregar(new VOMovingViolations(issueDate, addressID, location));				
+				
+					contador++;
 				}
 				lectorAbril.close();
 
@@ -140,25 +247,69 @@ public class Controller {
 
 			e.printStackTrace();
 		}
-
+		return contador;
 	}
 
 	public Comparable<LocationVO>[] generarMuestra(int numElems){
 		
-		muestra = new Comparable[numElems];	
-		Comparable<LocationVO> [] res = new Comparable[numElems/2];
+		Comparable<VOMovingViolations>[] temp = new Comparable[numElems];	
+		muestra = new Comparable[numElems];
 		int pos=0;
 		int aleatorio = 0;
 		while(pos<numElems)
 		{
 			aleatorio =  ThreadLocalRandom.current().nextInt(0, arreglo.darTamano());
-			muestra[pos] = arreglo.darElem(aleatorio);
+			temp[pos] = arreglo.darElem(aleatorio);
  			pos++;
 		}
-		Sort.ordenarMergeSort(muestra, Compa , true);
-		return res;
+		Sort.ordenarMergeSort(temp, Comparaciones.ADDRESSID.comparador , true);
+		int numAddressID = 0;
+		int pos1 = 0 ;
+		for(int j=0; j<temp.length-1;j++){
+			VOMovingViolations actual = (VOMovingViolations) temp[j];
+			if((actual.darAddressID() - ((VOMovingViolations) temp[j+1]).darAddressID()) == 0){
+				numAddressID++;
+			}
+			else{
+				
+				muestra[pos1] = new LocationVO(actual.darAddressID(), actual.darLocation(), numAddressID);
+				pos1++;
+				numAddressID = 1;
+			}
+			
+		}
+		return muestra;
+	}
+	public Comparable<LocationVO> [ ] obtenerCopia( Comparable<LocationVO> [ ] muestra)
+	{
+		Comparable<LocationVO> [ ] copia = new Comparable[ muestra.length ]; 
+		for ( int i = 0; i < muestra.length; i++)
+		{    copia[i] = muestra[i];    }
+		return copia;
 	}
 
+	public void agregarColaPrioridad(Comparable <LocationVO>[] arreglo ){
+
+		for(Comparable<LocationVO> actual: arreglo){
+			cola.agregar((LocationVO) actual);
+		}
+	}
+	public void agregarMaxHeap(Comparable<LocationVO>[] arreglo){
+	
+		for(Comparable<LocationVO> actual: arreglo){
+			heap.agregar((LocationVO) actual);
+		}
+	}
+	
+	public void borrarMaxCola(){
+		
+		cola.delMax();
+	}
+	
+	public void borrarMaxHeap(){
+		heap.delMax();
+	}
+	
 	/**
 	 * Convertir fecha a un objeto LocalDate
 	 * @param fecha fecha en formato dd/mm/aaaa con dd para dia, mm para mes y aaaa para agno
