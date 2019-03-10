@@ -6,16 +6,14 @@ package model.data_structures;
  */
 public class MaxHeapCP<T extends Comparable<T>> implements ColaDePrioridad<T>
 {
-	private int numElementos;
+	private int numElementos = 0;
 	private int tamanoArreglo;
 	private T[] heap;
 	private T[] elems;
 
 	public MaxHeapCP(int pTamano)
 	{
-		heap = (T[])new Comparable[pTamano];
-		agregar(null);
-		numElementos=0;
+		heap = (T[])new Comparable[pTamano+1];
 		tamanoArreglo=pTamano;
 	}
 	private boolean less(int i, int j)
@@ -85,7 +83,7 @@ public class MaxHeapCP<T extends Comparable<T>> implements ColaDePrioridad<T>
                	 heap[i] = copia[i];
               } 
          }	
-         heap[numElementos++] = elemento;
+         heap[++numElementos] = elemento;
          swim(numElementos);
        
 	}
