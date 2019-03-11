@@ -12,7 +12,7 @@ import java.util.Date;
  */
 public class VOMovingViolations implements Comparable<VOMovingViolations>{
 
-	
+
 	/**
 	 * Atributo que da el identificador de la ubicacion de la infraccion.
 	 */
@@ -45,12 +45,20 @@ public class VOMovingViolations implements Comparable<VOMovingViolations>{
 	public String darLocation(){
 		return location;
 	}
-	
+
 	public int darAddressID(){
 		return addressID;
 	}
 	public String darFecha(){
 		return ticketIssueDate;
+	}
+	private static LocalDateTime convertirFecha_Hora_LDT(String fechaHora)
+	{
+		return LocalDateTime.parse(fechaHora, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'.000Z'"));
+	}
+
+	public LocalDateTime darFechaLocalDateTime(){
+		return convertirFecha_Hora_LDT(ticketIssueDate);
 	}
 
 
@@ -60,5 +68,6 @@ public class VOMovingViolations implements Comparable<VOMovingViolations>{
 		return 0;
 	}
 
-	
+
+
 }

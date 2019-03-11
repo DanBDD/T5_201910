@@ -7,7 +7,6 @@ public class MaxColaPrioridad <T extends Comparable<T>>implements ColaDePriorida
 	private int numElementos;
 	private Nodo<T> primerNodo;
 
-	private Nodo<T> ultimo;
 	public MaxColaPrioridad()
 	{
 		primerNodo=null;
@@ -31,36 +30,33 @@ public class MaxColaPrioridad <T extends Comparable<T>>implements ColaDePriorida
 	}
 	@Override
 	public void agregar(T elemento) {
-		
+
 		boolean add = false;
-		
+
 		if(elemento == null){
 			throw new NullPointerException();
 		}
 
 		else
 		{
-		
+
 			Nodo<T> nuevo = new Nodo<T>(elemento);
-			
+
 			if(primerNodo == null){
 				primerNodo = nuevo;
-				numElementos++;
 				add =true;
 			}
 			else{
 				if(primerNodo.darSiguiente() == null){
 					if(primerNodo.darElem().compareTo(elemento) > 0){
 						primerNodo.cambiarSiguiente(nuevo);
-						numElementos++;
 						add =true;
 					}
 					else{
-					
+
 						Nodo<T> siguiente = primerNodo;
 						primerNodo = nuevo;
 						nuevo.cambiarSiguiente(siguiente);
-						numElementos++;
 						add =true;
 					}
 				}
@@ -71,7 +67,6 @@ public class MaxColaPrioridad <T extends Comparable<T>>implements ColaDePriorida
 						if(actual.darElem().compareTo(elemento) > 0){
 							if(actual.darSiguiente() == null){
 								actual.cambiarSiguiente(nuevo);
-								numElementos++;
 								add = true;
 							}
 							else{
@@ -84,23 +79,19 @@ public class MaxColaPrioridad <T extends Comparable<T>>implements ColaDePriorida
 								Nodo<T>siguiente = primerNodo;
 								primerNodo = nuevo;
 								nuevo.cambiarSiguiente(siguiente);
-								numElementos++;
 								add = true;
 							}
 							else{
 								anterior.cambiarSiguiente(nuevo);
 								nuevo.cambiarSiguiente(actual);
-								numElementos++;
 								add = true;
 							}
 						}
 					}
 				}
-				
 			}
 		}
-
-
+		numElementos++;
 	}
 
 	@Override

@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Scanner;
 import java.util.concurrent.ThreadLocalRandom;
@@ -27,6 +28,11 @@ public class Controller {
 	private Comparable<LocationVO>[] copia;
 	private MaxColaPrioridad<LocationVO> cola;
 	private MaxHeapCP<LocationVO> heap;
+	private MaxColaPrioridad <LocationVO> nuevaCola;
+	private MaxHeapCP<LocationVO> nuevoHeap;
+
+	
+
 	/**
 	 * Ruta de archivo CSV Enero.
 	 */
@@ -51,10 +57,12 @@ public class Controller {
 
 	public Controller() {
 		view = new MovingViolationsManagerView();
-		//TODO inicializar pila 
 		arreglo=new ArregloDinamico<VOMovingViolations>(160000);
 		cola = new MaxColaPrioridad<LocationVO>();
+		nuevaCola = new MaxColaPrioridad<LocationVO>();
 		heap = new MaxHeapCP<LocationVO>();
+		nuevoHeap = new MaxHeapCP<LocationVO>();
+
 	}
 
 	public void run() {
@@ -85,7 +93,7 @@ public class Controller {
 				view.printMessage("Muestra generada, tamano: " + tam);
 				break;
 			case 2: 
-				if ( nMuestra > 0 && muestra != null && muestra.length == nMuestra )
+				if ( nMuestra > 0 && muestra != null)
 				{    
 					view.printDatosMuestra( nMuestra, muestra);
 				}
@@ -95,9 +103,8 @@ public class Controller {
 				}
 				break;
 			case 3:
-				if ( nMuestra > 0 && muestra != null  )
+				if ( nMuestra > 0 && muestra != null)
 				{
-					System.out.println(muestra.length);
 					copia = this.obtenerCopia(muestra);
 					startTime = System.currentTimeMillis();
 					this.agregarColaPrioridad(copia);
@@ -116,7 +123,6 @@ public class Controller {
 			case 4:
 				if ( nMuestra > 0 && muestra != null  )
 				{
-					System.out.println(muestra.length);
 					copia = this.obtenerCopia(muestra);
 					startTime = System.currentTimeMillis();
 					this.agregarMaxHeap(copia);
@@ -132,16 +138,14 @@ public class Controller {
 				break;
 			case 5:
 				if ( nMuestra > 0 && muestra != null && cola.darNumElementos() > 0 )
-				{
-					System.out.println(muestra.length);
-
+				{					
 					copia = this.obtenerCopia(muestra);
 					startTime = System.currentTimeMillis();
 					this.borrarMaxCola(copia);
 					endTime = System.currentTimeMillis();
 					duration = endTime - startTime;
-					view.printMessage("Eliminar máximo terminado con Cola de Prioridad.");
-					view.printMessage("Tiempo en eliminar máximo con Cola de Prioridad: " + duration + " milisegundos");
+					view.printMessage("Eliminar mï¿½ximo terminado con Cola de Prioridad.");
+					view.printMessage("Tiempo en eliminar mï¿½ximo con Cola de Prioridad: " + duration + " milisegundos");
 				}
 				else
 				{
@@ -150,35 +154,51 @@ public class Controller {
 				break;
 
 			case 6:
-				System.out.println("Tam muestra "+muestra.length);
-				System.out.println("Tam heap " +heap.darNumElementos());
 				if ( nMuestra > 0 && muestra != null && heap.darNumElementos() > 0)
 				{
-					System.out.println(muestra.length);
-
 					copia = this.obtenerCopia(muestra);
 					startTime = System.currentTimeMillis();
 					this.borrarMaxHeap(copia);
 					endTime = System.currentTimeMillis();
 					duration = endTime - startTime;
-					view.printMessage("Eliminar máximo terminado con HeapMAX.");
-					view.printMessage("Tiempo en eliminar máximo con HeapMAX: " + duration + " milisegundos");
+					view.printMessage("Eliminar mï¿½ximo terminado con HeapMAX.");
+					view.printMessage("Tiempo en eliminar mï¿½ximo con HeapMAX: " + duration + " milisegundos");
 				}
 				else
 				{
 					view.printMessage("Muestra invalida");
 				}
 				break;
-			case 7:	
+			case 7:
+				view.printMessage("Ingrese la fecha con hora inicial (Ej : 2018-01-02T20:02:22.000Z)");
+				LocalDateTime fechaInicial = convertirFecha_Hora_LDT(sc.next());
+
+				view.printMessage("Ingrese la fecha con hora final (Ej : 2018-03-02T20:02:22.000Z)");
+				LocalDateTime fechaFinal = convertirFecha_Hora_LDT(sc.next());
+				view.printMessage("Ingrese la cantidad de vias que quiere ver: ");
+				int num=sc.nextInt();
+				view.printElementos( num, this.crearMaxColaP(fechaInicial, fechaFinal));
+
+				
+				break;
+			case 8:
+				view.printMessage("Ingrese la fecha con hora inicial (Ej : 2018-01-02T20:02:22.000Z");
+				LocalDateTime fechaInicial2 = convertirFecha_Hora_LDT(sc.next());
+
+				view.printMessage("Ingrese la fecha con hora final (Ej : 2018-03-02T20:02:22.000Z");
+				LocalDateTime fechaFinal2 = convertirFecha_Hora_LDT(sc.next());
+				view.printMessage("Ingrese la cantidad de vias que quiere ver: ");
+				int num2=sc.nextInt();
+				view.printElementos2( num2, this.crearMaxHeapCP(fechaInicial2, fechaFinal2));
+				
+				break;
+			case 9:	
 				fin=true;
 				sc.close();
 				break;
 			}
 		}
-
 	}
-
-
 	public int loadMovingViolations() {
 		int contador = 0;
 		boolean hayNulo = false;
@@ -285,9 +305,17 @@ public class Controller {
 			pos++;
 		}
 		Sort.ordenarMergeSort(temp, Comparaciones.ADDRESSID.comparador , true);
-		muestra = new Comparable[temp.length];
 		int numAddressID = 0;
 		int pos1 = 0 ;
+		int contador=0;
+		for(int i=0;i<temp.length-1;i++){
+			VOMovingViolations actual = (VOMovingViolations) temp[i];
+			if((actual.darAddressID() - ((VOMovingViolations) temp[i+1]).darAddressID()) != 0)
+			{
+				contador++;
+			}
+		}
+		muestra = new Comparable[contador];
 		for(int j=0; j<temp.length-1;j++){
 			VOMovingViolations actual = (VOMovingViolations) temp[j];
 			if((actual.darAddressID() - ((VOMovingViolations) temp[j+1]).darAddressID()) == 0){
@@ -299,7 +327,6 @@ public class Controller {
 				pos1++;
 				numAddressID = 1;
 			}
-
 		}
 		return muestra;
 	}
@@ -328,7 +355,6 @@ public class Controller {
 
 	public void borrarMaxCola(Comparable<LocationVO>[] pArreglo){
 		for(int i = 0; i<pArreglo.length && pArreglo[i] != null;i++){
-
 			cola.delMax();
 		}
 	}
@@ -365,5 +391,90 @@ public class Controller {
 
 	public LocalTime darHora(String fecha){
 		return convertirFecha_Hora_LDT(fecha).toLocalTime();
+	}
+	public Comparable<VOMovingViolations>[] pasarDinamicoArreglo()
+	{
+		Comparable<VOMovingViolations>[] temp = new Comparable[arreglo.darTamano()];	
+
+		int pos=0;
+		while(pos<arreglo.darTamano())
+		{
+			temp[pos] = arreglo.darElem(pos);
+			pos++;
+		}
+		return temp;
+
+	}
+	public Comparable<VOMovingViolations>[] rango(LocalDateTime fInicial, LocalDateTime fFinal, Comparable<VOMovingViolations>[] temp)
+	{
+		int contador=0;
+		for(int i=0;i<temp.length;i++)
+		{
+			VOMovingViolations actual = (VOMovingViolations) temp[i];
+			LocalDateTime fecha=convertirFecha_Hora_LDT(actual.darFecha());
+			if(fecha.compareTo(fInicial)>0 && fecha.compareTo(fFinal)<0)
+			{
+				contador++;
+			}
+		}
+		Comparable<VOMovingViolations>[] r = new Comparable[contador];	
+		int pos=0;
+		for(int i=0;i<temp.length-1;i++)
+		{
+			VOMovingViolations actual = (VOMovingViolations) temp[i];
+			LocalDateTime fecha=convertirFecha_Hora_LDT(actual.darFecha());
+			if(fecha.compareTo(fInicial)>0 && fecha.compareTo(fFinal)<0)
+			{
+				r[pos]=actual;
+				pos++;
+			}
+		}
+		return r;
+	}
+	public MaxColaPrioridad <LocationVO> crearMaxColaP (LocalDateTime fInicial, LocalDateTime fFinal){
+
+		Comparable<VOMovingViolations>[] temp;
+		temp=pasarDinamicoArreglo();
+		Sort.ordenarMergeSort(temp, Comparaciones.DATE.comparador, true);
+		Comparable<VOMovingViolations>[] rango;
+		rango=rango( fInicial,  fFinal, temp);
+		int numAddressID = 0;
+		Sort.ordenarMergeSort(rango, Comparaciones.ADDRESSID.comparador, true);
+		for(int j=0; j<rango.length-1;j++){
+			VOMovingViolations actual = (VOMovingViolations) rango[j];
+
+			if((actual.darAddressID() - ((VOMovingViolations) rango[j+1]).darAddressID()) == 0){
+				numAddressID++;
+			}
+			else{
+
+				nuevaCola.agregar( new LocationVO(actual.darAddressID(), actual.darLocation(), numAddressID));
+				numAddressID = 1;
+			}
+		}
+		return nuevaCola;
+	}
+	public MaxHeapCP <LocationVO> crearMaxHeapCP (LocalDateTime fInicial, LocalDateTime fFinal)
+	{
+		Comparable<VOMovingViolations>[] temp;
+		temp=pasarDinamicoArreglo();
+		Sort.ordenarMergeSort(temp, Comparaciones.DATE.comparador, true);
+		Comparable<VOMovingViolations>[] rango;
+		rango=rango( fInicial,  fFinal, temp);
+		int numAddressID = 0;
+		Sort.ordenarMergeSort(rango, Comparaciones.ADDRESSID.comparador, true);
+		for(int j=0; j<rango.length-1;j++){
+			VOMovingViolations actual = (VOMovingViolations) rango[j];
+
+			if((actual.darAddressID() - ((VOMovingViolations) rango[j+1]).darAddressID()) == 0){
+				numAddressID++;
+			}
+			else{
+
+				nuevoHeap.agregar( new LocationVO(actual.darAddressID(), actual.darLocation(), numAddressID));
+				numAddressID = 1;
+			}
+		}
+		return nuevoHeap;
 	}
 }

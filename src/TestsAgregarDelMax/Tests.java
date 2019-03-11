@@ -24,7 +24,6 @@ public class Tests extends TestCase{
 		}
 
 	}
-
 	@Test
 	public void testSize()
 	{
