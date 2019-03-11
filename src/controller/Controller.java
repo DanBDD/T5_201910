@@ -177,8 +177,11 @@ public class Controller {
 				LocalDateTime fechaFinal = convertirFecha_Hora_LDT(sc.next());
 				view.printMessage("Ingrese la cantidad de vias que quiere ver: ");
 				int num=sc.nextInt();
+				startTime = System.currentTimeMillis();
 				view.printElementos( num, this.crearMaxColaP(fechaInicial, fechaFinal));
-
+				endTime = System.currentTimeMillis();
+				duration = endTime - startTime;
+				view.printMessage("Tiempo con Cola de Prioridad: " + duration + " milisegundos");
 				
 				break;
 			case 8:
@@ -189,8 +192,11 @@ public class Controller {
 				LocalDateTime fechaFinal2 = convertirFecha_Hora_LDT(sc.next());
 				view.printMessage("Ingrese la cantidad de vias que quiere ver: ");
 				int num2=sc.nextInt();
+				startTime = System.currentTimeMillis();
 				view.printElementos2( num2, this.crearMaxHeapCP(fechaInicial2, fechaFinal2));
-				
+				endTime = System.currentTimeMillis();
+				duration = endTime - startTime;
+				view.printMessage("Tiempo con Heap: " + duration + " milisegundos");
 				break;
 			case 9:	
 				fin=true;
